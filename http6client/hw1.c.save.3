@@ -1,0 +1,112 @@
+/* 
+
+Minimal TCP client example. The client connects to port 8080 on the 
+local machine and prints up to 255 received characters to the console, 
+then exits. To test it, try running a minimal server like this on your
+local machine:
+
+echo "Here is a message" | nc -l -6 8080
+
+*/
+
+
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdio.h>
+#define THEBUFFER 1024
+int main(int argc, char** argv) 
+{	
+	char buffer[THEBUFFER];
+	int sockfd;
+  /* inpsired heavily by man 3 getaddrinfo 
+   */
+if(argc!=2){
+fprintf(stderr,"we require a url, or you have more than one. Please fix. \n");
+exit(-5);//-5 is failed input
+}
+int needsIndex =0;//used as a bool
+char* url = argv[1];
+int urlSize=strlen(url);
+char newUrl[urlSize+10];//only used if a index.html is needed
+int a,b,c,d;//for loop index
+
+
+char* html = ".html";
+char* com = ".com";
+char* net = ".net";
+char* slashHtml = "/index.html";
+char* picOne = "jpeg";
+char* picTwo = "gif";
+char* picThree = "png";
+char* picFour = "jpg";
+//check if it ends with a picture filetype
+if(strstr(url,picOne)!=NULL || strstr(url,picTwo)!=NULL || strstr(url,picThree)!=NULL || strstr(url,picFour)!=NULL){
+	fprintf(stderr,"is a picture \n");
+}
+else{//not a picture. check if /index.html is needed
+	int counting=3;
+	for(a=urlSize-1;a>urlSize-4;a--){
+		if(url[a]!=com[counting]||url[a]!=net[counting])
+			break;
+		counting++;
+	}
+	if(url[urlSize]=='/'){
+
+	}
+//printf("%d\n",urlSize);
+for( a=0;a<(urlSize);a++){
+	newUrl[a]=url[a];
+}
+
+for(a=urlSize;a<(urlSize+11);a++){
+	newUrl[a]=slashHtml[a-urlSize];
+}
+}
+fprintf(stderr,newUrl);
+  struct addrinfo hints;
+  struct addrinfo * result, * rp;
+  int sock_fd, s;
+
+  hints.ai_socktype = SOCK_STREAM;
+  memset(&hints,0,sizeof(struct addrinfo));
+
+  s = getaddrinfo(url,"8080",&hints,&result);
+	printf("%d\n",s);
+  if (0 != s){
+    perror("error populating address structure");
+    exit(1);
+  }
+  for (rp = result; rp != NULL; rp = rp->ai_next) {
+    sock_fd = socket(rp->ai_family, rp->ai_socktype,
+                     rp->ai_protocol);
+    if (sock_fd == -1)
+      continue;
+
+    if (connect(sock_fd, rp->ai_addr, rp->ai_addrlen) != -1)
+     	sprintf(buffer, "GET %s HTTP/1.0\r\n\r\n", url);
+	send(sockfd,buffer, strlen(buffer), 0);
+	 break; /* Success */
+    close(sock_fd);
+  }
+
+  if (rp == NULL) {
+    fprintf(stderr, "could not connect\n");
+    exit(1);
+  }
+
+  freeaddrinfo(result);
+
+	char buf[255];
+	memset(&buf,0,sizeof(buf));
+	int recv_count = recv(sock_fd, buf, 255, 0);
+	if(recv_count<0) { perror("Receive failed");	exit(1); }
+
+	printf("%s",buf);																							
+
+	shutdown(sock_fd,SHUT_RDWR);
+}

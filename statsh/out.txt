@@ -1,0 +1,21 @@
+out.txt
+readme.docx
+statsh
+statsh.cpp
+statsh.zip
+command: ls, user runtime: 0 s, system runtime: 0 s 
+Issue a command
+<out.txt
+readme.docx
+statsh
+statsh.cpp
+statsh.zip
+command: ls, user runtime: 0 s, system runtime: 0 s 
+Issue a command
+<  PID TTY          TIME CMD
+ 1910 pts/0    00:00:00 bash
+ 2209 pts/0    00:00:00 statsh
+ 2228 pts/0    00:00:00 ps
+command: ps, user runtime: 0.004 s, system runtime: 0.008 s 
+Issue a command
+<
